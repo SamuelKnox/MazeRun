@@ -15,8 +15,10 @@ public:
 	// Sets default values for this actor's properties
 	AMaze(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Maze)
-		bool ShowTests;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dangers) //Where spike is placed when spawned in ground
+		FVector GroundSpikeOffset;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dangers) //Chance of spike being placed in block (percent chance)
+		float SpikeSpawnChance;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MazeGen101isMax) //Maze xMax
 		float MazeXKeepODD;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MazeGen101isMax) //Maze yMax
@@ -33,6 +35,8 @@ public:
 		UClass* TileStartBP;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = MazeTiles)
 		UClass* TileEndBP;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Dangers)
+		UClass* SpikeBP;
 	UFUNCTION(BlueprintCallable, Category = MazeGen)
 		void GenMaze(float tileX, float tileY);
 

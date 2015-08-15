@@ -42,6 +42,9 @@ public:
 		float extendSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Action) //Speed that spike retracts
 		float retractSpeed;
+	UFUNCTION(BlueprintCallable, Category = Collision)
+		virtual void OnDangerHit(class AActor* OtherActor, class UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

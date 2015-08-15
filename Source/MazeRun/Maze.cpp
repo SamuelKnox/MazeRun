@@ -16,6 +16,8 @@ AMaze::AMaze(const class FObjectInitializer& ObjectInitializer)
 	MazeYKeepODD = MazeSizeMax;
 	offset = 200.0f;
 	MazeSeed = 0;
+	GroundSpikeOffset = FVector(0.0f, 0.0f, -200.0f);
+	SpikeSpawnChance = 30.0f;
 }
 
 // Called when the game starts or when spawned
@@ -65,6 +67,11 @@ void AMaze::GenMaze(float tileX, float tileY){
 				AStaticMeshActor* GroundTile = SpawnBP<AStaticMeshActor>(GetWorld(), TileGroundBP,
 					GenSpawnLoc, GenSpawnRot, true, this);
 				GroundTile->AddActorWorldOffset(this->GetActorLocation());
+
+				float random = ((float)rand()) / (float)RAND_MAX; //Spawn spike in the ground with a certain percent chance
+				if ((x * y != 1) && random * 100.0f < SpikeSpawnChance) SpawnBP<AActor>(GetWorld(), SpikeBP, //from 0 to 100 percent, also not the starting tile
+					GroundTile->GetActorLocation() + GroundSpikeOffset, GenSpawnRot, true, GroundTile);
+				
 				grid[x][y] = GroundTile;
 			}
 			//-------------Starting Tile Spawn---------------

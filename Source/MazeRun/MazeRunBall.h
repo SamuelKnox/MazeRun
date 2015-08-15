@@ -20,6 +20,8 @@ class AMazeRunBall : public APawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Ball, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Death, meta = (AllowPrivateAccess = "true"))
+	class UParticleSystemComponent* DeathExplosion;
 public:
 	AMazeRunBall();
 

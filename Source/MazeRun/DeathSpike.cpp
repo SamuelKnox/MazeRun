@@ -2,7 +2,19 @@
 
 #include "MazeRun.h"
 #include "DeathSpike.h"
+#include "MazeRunBall.h"
 
+
+void ADeathSpike::OnDangerHit(class AActor* OtherActor, class UPrimitiveComponent* OtherComp, //Makes ball disappear magically on hit
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+	if (OtherActor == this) return;
+	if (OtherActor != NULL && OtherActor == GetWorld()->GetFirstPlayerController()->GetPawn()) //Easy check for first player pawn
+	{
+		AMazeRunBall* Player = Cast<AMazeRunBall>(GetWorld()->GetFirstPlayerController()->GetPawn()); //Cast to player for easy access
+		Player->GetBall()->SetVisibility(false);
+	}
+}
 
 // Sets default values
 ADeathSpike::ADeathSpike(const class FObjectInitializer& ObjectInitializer)
@@ -22,6 +34,7 @@ ADeathSpike::ADeathSpike(const class FObjectInitializer& ObjectInitializer)
 	extendSpeed = 2.0f;
 	retractSpeed = 2.0f;
 	behavior = ESpikeBehaviorEnum::RestingAtRetract;
+	SpikeMesh->OnComponentBeginOverlap.AddDynamic(this, &ADeathSpike::OnDangerHit); //Add hit function as delegate
 }
 
 // Called when the game starts or when spawned
