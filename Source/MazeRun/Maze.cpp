@@ -2,6 +2,7 @@
 
 #include "MazeRun.h"
 #include "Maze.h"
+#include "MazeRunBall.h"
 
 
 // Sets default values
@@ -27,6 +28,8 @@ void AMaze::BeginPlay()
 	GenMaze(MazeXKeepODD, MazeYKeepODD);
 	UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->
 		SetActorLocation(this->GetActorLocation() + FVector(offset, offset, offset));
+	AMazeRunBall* Player = Cast<AMazeRunBall>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	Player->SetStartupLocation(this->GetActorLocation() + FVector(offset, offset, offset));
 }
 
 // Called every frame

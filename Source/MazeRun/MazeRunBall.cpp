@@ -6,7 +6,7 @@
 AMazeRunBall::AMazeRunBall()
 {
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> BallMesh(TEXT("/Game/Rolling/Meshes/BallMesh.BallMesh"));
-
+	PrimaryActorTick.bCanEverTick = true;
 	// Create mesh component for the ball
 	Ball = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ball0"));
 	Ball->SetStaticMesh(BallMesh.Object);
@@ -38,9 +38,25 @@ AMazeRunBall::AMazeRunBall()
 	RollTorque = 50000000.0f;
 	JumpImpulse = 350000.0f;
 	bCanJump = true; // Start being able to jump
+	isDead = false;
+	deadTime = 0;
+	maxDeadTime = 3.0f;
+	startupLocation = FVector(0, 0, 0);
 }
 
 
+void AMazeRunBall::Die()
+{
+	if (isDead) return;
+	Ball->SetVisibility(false); //Make ball disappear and stop in its tracks
+	Ball->SetPhysicsLinearVelocity(FVector::ZeroVector);
+	Ball->SetPhysicsAngularVelocity(FVector::ZeroVector);
+	Ball->SetSimulatePhysics(false);
+	UGameplayStatics::SpawnEmitterAtLocation(this, //AND EXPLOOOODE
+		Cast<UParticleSystem>(StaticLoadObject(UParticleSystem::StaticClass(), NULL,
+		TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"))), GetActorLocation(), GetActorRotation(), true);
+	isDead = true;
+}
 void AMazeRunBall::SetupPlayerInputComponent(class UInputComponent* InputComponent)
 {
 	// set up gameplay key bindings
@@ -76,4 +92,22 @@ void AMazeRunBall::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Ot
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 	bCanJump = true;
+}
+
+void AMazeRunBall::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if (isDead)
+	{
+		deadTime += DeltaTime;
+		if (deadTime > maxDeadTime) //Count the seconds of death
+		{
+			deadTime = 0;
+			isDead = false;
+			Ball->SetVisibility(true);
+			Ball->SetSimulatePhysics(true);
+			this->SetActorLocation(startupLocation);
+		}
+	}
+
 }

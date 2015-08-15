@@ -12,7 +12,7 @@ void ADeathSpike::OnDangerHit(class AActor* OtherActor, class UPrimitiveComponen
 	if (OtherActor != NULL && OtherActor == GetWorld()->GetFirstPlayerController()->GetPawn()) //Easy check for first player pawn
 	{
 		AMazeRunBall* Player = Cast<AMazeRunBall>(GetWorld()->GetFirstPlayerController()->GetPawn()); //Cast to player for easy access
-		Player->GetBall()->SetVisibility(false);
+		Player->Die();
 	}
 }
 

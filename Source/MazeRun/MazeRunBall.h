@@ -20,8 +20,6 @@ class AMazeRunBall : public APawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Ball, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Death, meta = (AllowPrivateAccess = "true"))
-	class UParticleSystemComponent* DeathExplosion;
 public:
 	AMazeRunBall();
 
@@ -33,8 +31,19 @@ public:
 	UPROPERTY(EditAnywhere, Category=Ball)
 	float RollTorque;
 
+	UPROPERTY(EditAnywhere, Category = Death) //Time before resurrection
+	float maxDeadTime;
+
+	void Die();
+	void SetStartupLocation(FVector location) { startupLocation = location; }
+	
 	/** Indicates whether we can currently jump, use to prevent double jumping */
 	bool bCanJump;
+	bool isDead;
+	float deadTime; //Time to clock when dead
+
+private:
+	FVector startupLocation; //Place to go at the beginning of the maze
 
 protected:
 
@@ -46,6 +55,8 @@ protected:
 
 	/** Handle jump action. */
 	void Jump();
+
+	virtual void Tick(float DeltaSeconds) override;
 
 	// AActor interface
 	virtual void NotifyHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
