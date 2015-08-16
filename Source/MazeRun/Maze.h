@@ -6,6 +6,13 @@
 #include "Engine/StaticMeshActor.h"
 #include "Maze.generated.h"
 
+
+struct CellInfo //Determines where cell is open to put a spike if necessary
+{
+	bool isGround;
+	bool isStartOrEnd;
+};
+
 UCLASS(config = Game)
 class MAZERUN_API AMaze : public AActor
 {
@@ -46,6 +53,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
+	void SpawnSpike(AActor* block, FRotator rotation, FVector offset, float chance);
 };
 
 template <typename AMazeGen>

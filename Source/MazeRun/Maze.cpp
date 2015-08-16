@@ -51,7 +51,7 @@ void AMaze::GenMaze(float tileX, float tileY){
 	int RandomEndTileLoc = rand() % ((int)tileX - 1) + 1;
 
 	AStaticMeshActor* grid[MazeSizeMax][MazeSizeMax];
-
+	CellInfo cellInfoGrid[MazeSizeMax][MazeSizeMax];
 	for (int x = 0; x<tileX; x++){
 		for (int y = 0; y<tileY; y++){
 			if (y == 0 || x == 0 || y == tileY - 1 || x == tileX - 1 || (y % 2 == 0 && x % 2 == 0)){
@@ -62,6 +62,7 @@ void AMaze::GenMaze(float tileX, float tileY){
 					GenSpawnLoc, GenSpawnRot, true, this);
 				BlockTile->AddActorWorldOffset(this->GetActorLocation());
 				grid[x][y] = BlockTile;
+				cellInfoGrid[x][y] = { false, false }; //Set border blocks 
 			}
 			else{
 				const FVector  GenSpawnLoc(CaptureX, CaptureY, 0);
@@ -70,12 +71,9 @@ void AMaze::GenMaze(float tileX, float tileY){
 				AStaticMeshActor* GroundTile = SpawnBP<AStaticMeshActor>(GetWorld(), TileGroundBP,
 					GenSpawnLoc, GenSpawnRot, true, this);
 				GroundTile->AddActorWorldOffset(this->GetActorLocation());
-
-				float random = ((float)rand()) / (float)RAND_MAX; //Spawn spike in the ground with a certain percent chance
-				if ((x * y != 1) && random * 100.0f < SpikeSpawnChance) SpawnBP<AActor>(GetWorld(), SpikeBP, //from 0 to 100 percent, also not the starting tile
-					GroundTile->GetActorLocation() + GroundSpikeOffset, GenSpawnRot, true, GroundTile);
 				
 				grid[x][y] = GroundTile;
+				cellInfoGrid[x][y] = {true, false};
 			}
 			//-------------Starting Tile Spawn---------------
 			if (CaptureX == offset && CaptureY == offset){
@@ -88,6 +86,7 @@ void AMaze::GenMaze(float tileX, float tileY){
 					GenSpawnLoc, GenSpawnRot, true, this);
 				StartTile->AddActorWorldOffset(this->GetActorLocation());
 				grid[1][1] = StartTile;
+				cellInfoGrid[1][1] = { true, true };
 			}
 			//-------------Ending Tile Spawn---------------
 			if (y == tileY - 1 && x == tileX - 1){
@@ -101,6 +100,7 @@ void AMaze::GenMaze(float tileX, float tileY){
 					GenSpawnLoc, GenSpawnRot, true, this);
 				EndTile->AddActorWorldOffset(this->GetActorLocation());
 				grid[x - 1][y - 1] = EndTile;
+				cellInfoGrid[1][1] = { true, true };
 			}
 			CaptureY += offset;
 			if (CaptureY >= offset * tileY){ CaptureY = 0; }
@@ -131,6 +131,7 @@ void AMaze::GenMaze(float tileX, float tileY){
 			AStaticMeshActor* BlockTile = SpawnBP<AStaticMeshActor>(GetWorld(), TileBlockBP,
 				GenSpawnLoc, GenSpawnRot, true, this);
 			grid[dx][dy] = BlockTile;
+			cellInfoGrid[dx][dy].isGround = false;
 		}
 		else{
 			y -= 2;
@@ -158,11 +159,52 @@ void AMaze::GenMaze(float tileX, float tileY){
 				AStaticMeshActor* BlockTile = SpawnBP<AStaticMeshActor>(GetWorld(), TileBlockBP,
 					GenSpawnLoc, GenSpawnRot, true, this);
 				grid[dx][dy] = BlockTile;
+				cellInfoGrid[dx][dy].isGround = false;
 			}
 			else{
 				y -= 2;
 			}
 		}
 	}
+	for (int x = 0; x < tileX; x++){
+		for (int y = 0; y < tileY; y++){
+			if (cellInfoGrid[x][y].isGround && !cellInfoGrid[x][y].isStartOrEnd)
+				SpawnSpike(grid[x][y], grid[x][y]->GetActorRotation(), GroundSpikeOffset, SpikeSpawnChance);
+			else if (!cellInfoGrid[x][y].isGround)
+			{
+				int rnd4;
+				//Choose a random direction to spawn to (right, left, up, down)
+				switch (rnd4 = rand() % 4){
+				case 0: 
+					if (y < tileY - 1 && cellInfoGrid[x][y + 1].isGround && !cellInfoGrid[x][y + 1].isStartOrEnd)
+						SpawnSpike(grid[x][y], FRotator::MakeFromEuler(FVector(90.0f, 0, 0)), 
+						FVector(0, -offset * 0.6f, offset/2.0f), SpikeSpawnChance * 3.0f);
+					break;
+				case 1: 
+					if (y > 0 && cellInfoGrid[x][y - 1].isGround && !cellInfoGrid[x][y - 1].isStartOrEnd)
+						SpawnSpike(grid[x][y], FRotator::MakeFromEuler(FVector(-90.0f, 0, 0)), 
+						FVector(0, offset * 0.6f, offset / 2.0f), SpikeSpawnChance * 3.0f);
+					break;
+				case 2: 
+					if (x < tileX - 1 && cellInfoGrid[x + 1][y].isGround && !cellInfoGrid[x + 1][y].isStartOrEnd)
+						SpawnSpike(grid[x][y], FRotator::MakeFromEuler(FVector(0, -90.0f, 0)), 
+						FVector(-offset * 0.6f, 0, offset / 2.0f), SpikeSpawnChance * 3.0f);
+					break;
+				case 3: 
+					if (x > 0 && cellInfoGrid[x - 1][y].isGround && !cellInfoGrid[x - 1][y].isStartOrEnd)
+						SpawnSpike(grid[x][y], FRotator::MakeFromEuler(FVector(0, 90.0f, 0)), 
+						FVector(offset * 0.6f, 0, offset / 2.0f), SpikeSpawnChance * 3.0f);
+					break;
+				}
+			}
+		}
+	}
+}
+
+void AMaze::SpawnSpike(AActor* block, FRotator rotation, FVector offset, float chance)
+{
+	float random = ((float)rand()) / (float)RAND_MAX;
+	if (random * 100.0f < chance) SpawnBP<AActor>(GetWorld(), SpikeBP, //from 0 to 100 percent, also not the starting tile
+		block->GetActorLocation() + offset, rotation, true, block);
 }
 

@@ -42,6 +42,8 @@ public:
 		float extendSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Action) //Speed that spike retracts
 		float retractSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Action) //Distance of sound to ball for easier attenuation
+		float soundDistance;
 	UFUNCTION(BlueprintCallable, Category = Collision)
 		virtual void OnDangerHit(class AActor* OtherActor, class UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);

@@ -24,7 +24,7 @@ AMazeRunBall::AMazeRunBall()
 	SpringArm->AttachTo(RootComponent);
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->bAbsoluteRotation = true; // Rotation of the ball should not affect rotation of boom
-	SpringArm->RelativeRotation = FRotator(-45.f, 0.f, 0.f);
+	SpringArm->RelativeRotation = FRotator(-90.f, 0.f, 0.f);
 	SpringArm->TargetArmLength = 1200.f;
 	SpringArm->bEnableCameraLag = false;
 	SpringArm->CameraLagSpeed = 3.f;
@@ -55,6 +55,8 @@ void AMazeRunBall::Die()
 	UGameplayStatics::SpawnEmitterAtLocation(this, //AND EXPLOOOODE
 		Cast<UParticleSystem>(StaticLoadObject(UParticleSystem::StaticClass(), NULL,
 		TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"))), GetActorLocation(), GetActorRotation(), true);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), NULL,
+		TEXT("/Game/Rolling/Sounds/Explosion.Explosion"))), GetActorLocation());
 	isDead = true;
 }
 void AMazeRunBall::SetupPlayerInputComponent(class UInputComponent* InputComponent)
