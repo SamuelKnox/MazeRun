@@ -27,9 +27,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Draw) //Where to put rectangle
 		FVector2D recPoint;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Draw) //Where to put text
+		FVector2D textStartPoint;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Draw) //Size of font
 		FVector2D mazeFontSize;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Draw) //Vertically separating text
+		float textSeparatorOffset;
+
 	virtual void DrawHUD() override;
+
+	virtual void Tick( float DeltaSeconds ) override;
+
+	bool isDead;
+	float currentTime;
 	
 };
