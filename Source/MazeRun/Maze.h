@@ -44,6 +44,8 @@ public:
 		UClass* TileEndBP;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Dangers)
 		UClass* SpikeBP;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Win) //Blueprint for winning box
+		UClass* WinBP;
 	UFUNCTION(BlueprintCallable, Category = MazeGen)
 		void GenMaze(float tileX, float tileY);
 

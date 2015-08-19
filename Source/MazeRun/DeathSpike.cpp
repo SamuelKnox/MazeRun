@@ -33,7 +33,7 @@ ADeathSpike::ADeathSpike(const class FObjectInitializer& ObjectInitializer)
 	extendDistance = 30.0f;
 	extendSpeed = 2.0f;
 	retractSpeed = 2.0f;
-	soundDistance = 600.0f;
+	soundDistance = 1200.0f;
 	behavior = ESpikeBehaviorEnum::RestingAtRetract;
 	SpikeMesh->OnComponentBeginOverlap.AddDynamic(this, &ADeathSpike::OnDangerHit); //Add hit function as delegate
 }

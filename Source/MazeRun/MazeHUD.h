@@ -36,11 +36,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Draw) //Vertically separating text
 		float textSeparatorOffset;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Draw) //how fast to interpolate from green to red text
+		float deathColorSpeed;
+
 	virtual void DrawHUD() override;
 
 	virtual void Tick( float DeltaSeconds ) override;
 
 	bool isDead;
+	FLinearColor textColor;
 	float currentTime;
 	
 };

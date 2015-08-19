@@ -40,8 +40,10 @@ public:
 	/** Indicates whether we can currently jump, use to prevent double jumping */
 	bool bCanJump;
 	bool isDead;
+	bool isWon;
 	float deadTime; //Time to clock when dead
-
+	FLinearColor initialTint; //Tint of camera at beginning
+	float deathColorSpeed; //Speed to fade out to red
 private:
 	FVector startupLocation; //Place to go at the beginning of the maze
 

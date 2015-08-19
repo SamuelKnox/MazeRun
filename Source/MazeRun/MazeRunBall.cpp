@@ -32,6 +32,8 @@ AMazeRunBall::AMazeRunBall()
 	// Create a camera and attach to boom
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera0"));
 	Camera->AttachTo(SpringArm, USpringArmComponent::SocketName);
+	Camera->PostProcessSettings.bOverride_FilmWhitePoint = true;
+	initialTint = Camera->PostProcessSettings.FilmWhitePoint;
 	Camera->bUsePawnControlRotation = false; // We don't want the controller rotating the camera
 
 	// Set up forces
@@ -41,6 +43,7 @@ AMazeRunBall::AMazeRunBall()
 	isDead = false;
 	deadTime = 0;
 	maxDeadTime = 3.0f;
+	deathColorSpeed = 4.0f;
 	startupLocation = FVector(0, 0, 0);
 }
 
@@ -101,15 +104,18 @@ void AMazeRunBall::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (isDead)
 	{
+		if(!isWon) Camera->PostProcessSettings.FilmWhitePoint = FMath::CInterpTo(Camera->PostProcessSettings.FilmWhitePoint, 
+			FLinearColor::Red, DeltaTime, deathColorSpeed);
 		deadTime += DeltaTime;
 		if (deadTime > maxDeadTime) //Count the seconds of death
 		{
 			deadTime = 0;
 			isDead = false;
+			isWon = false;
 			Ball->SetVisibility(true);
 			Ball->SetSimulatePhysics(true);
 			this->SetActorLocation(startupLocation);
 		}
 	}
-
+	else Camera->PostProcessSettings.FilmWhitePoint = initialTint;
 }
