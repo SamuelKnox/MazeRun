@@ -11,17 +11,18 @@ AMazeHUD::AMazeHUD(const class FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {
 	recHeight = -120.0f;
-	recWidth = -130.0f;
+	recWidth = -190.0f;
 	mazeFontSize = FVector2D(2.0f, 2.0f);
 	recPoint = FVector2D(-170.0f, -80.0f);
 	textSeparatorOffset = 40.0f;
 	currentTime = 0;
 	deathColorSpeed = 4.0f;
 	isDead = false;
-	textStartPoint = FVector2D(-245.0f, -180.0f);
+	textStartPoint = FVector2D(-275.0f, -180.0f);
 	ConstructorHelpers::FObjectFinder<UFont> FontObject(TEXT("Font'/Game/Rolling/Fonts/FerroRosso.FerroRosso'"));
-	mazeFont = FontObject.Object;
+	mazeFont = FontObject.Object; //Find object then cast and set it
 	textColor = FLinearColor::Green;
+	topTime = 0;
 }
 
 void AMazeHUD::DrawHUD()
@@ -36,7 +37,7 @@ void AMazeHUD::DrawHUD()
 	DrawText(TEXT("Time"), textStartPoint, mazeFont, mazeFontSize, textColor); //The title
 
 	int precision = 2;
-	FNumberFormattingOptions NumberFormat;					//Text.h
+	FNumberFormattingOptions NumberFormat; //For 2 decimal places
 	NumberFormat.MinimumIntegralDigits = 1;
 	NumberFormat.MaximumIntegralDigits = 10000;
 	NumberFormat.MinimumFractionalDigits = precision;
@@ -45,19 +46,26 @@ void AMazeHUD::DrawHUD()
 	GetTextSize(TimeString, textWidth, textHeight, mazeFont, mazeFontSize.X);
 	DrawText(TimeString, FVector2D(textStartPoint.X, textStartPoint.Y + 
 		textSeparatorOffset), mazeFont, mazeFontSize, textColor);
-
-	GetTextSize(TEXT("Top Score: "), textWidth, textHeight, mazeFont, mazeFontSize.X);
-	DrawText(TEXT("Top Score: "), FVector2D(textStartPoint.X, textStartPoint.Y +
+	
+	FString TopScoreString = FString("Top Score: ") + FText::AsNumber(topTime, &NumberFormat).ToString(); //Use same number format
+	GetTextSize(TopScoreString, textWidth, textHeight, mazeFont, mazeFontSize.X); //For top score as timer score
+	DrawText(TopScoreString, FVector2D(textStartPoint.X, textStartPoint.Y +
 		(textSeparatorOffset * 2.0f)), mazeFont, mazeFontSize, textColor);
 }
 
 void AMazeHUD::Tick(float DeltaTime)
 {
 	currentTime += DeltaTime;
-	if (Cast<AMazeRunBall>(GetWorld()->GetFirstPlayerController()->GetPawn())->isDead) isDead = true;
+	if (Cast<AMazeRunBall>(GetWorld()->GetFirstPlayerController()->GetPawn())->isDead)
+	{
+		if (!isDead && Cast<AMazeRunBall>(GetWorld()->GetFirstPlayerController()->GetPawn())->isWon) 
+			topTime = currentTime;  //Get that top score ONCE
+		isDead = true; //Initiate HUD death
+		
+	}
 	else if (!Cast<AMazeRunBall>(GetWorld()->GetFirstPlayerController()->GetPawn())->isDead && isDead)
 	{
-		currentTime = 0;
+		currentTime = 0; //Reset the clock
 		isDead = false;
 	}
 

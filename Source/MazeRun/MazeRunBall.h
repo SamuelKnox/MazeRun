@@ -20,6 +20,7 @@ class AMazeRunBall : public APawn
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Ball, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
 
+
 public:
 	AMazeRunBall();
 

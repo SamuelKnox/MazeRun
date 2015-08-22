@@ -46,5 +46,6 @@ public:
 	bool isDead;
 	FLinearColor textColor;
 	float currentTime;
+	float topTime;
 	
 };
