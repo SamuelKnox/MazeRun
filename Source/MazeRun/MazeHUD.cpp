@@ -19,7 +19,7 @@ AMazeHUD::AMazeHUD(const class FObjectInitializer& ObjectInitializer)
 	deathColorSpeed = 4.0f;
 	isDead = false;
 	textStartPoint = FVector2D(-275.0f, -180.0f);
-	ConstructorHelpers::FObjectFinder<UFont> FontObject(TEXT("Font'/Game/Rolling/Fonts/FerroRosso.FerroRosso'"));
+	ConstructorHelpers::FObjectFinder<UFont> FontObject(TEXT("Font'/Game/Rolling/Fonts/Freezer.Freezer'"));
 	mazeFont = FontObject.Object; //Find object then cast and set it
 	textColor = FLinearColor::Green;
 	topTime = 0;
