@@ -24,6 +24,9 @@ class AMazeRunBall : public APawn
 public:
 	AMazeRunBall();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio) //main audio in game
+	class UAudioComponent* Music;
+
 	/** Vertical impulse to apply when pressing jump */
 	UPROPERTY(EditAnywhere, Category=Ball)
 	float JumpImpulse;

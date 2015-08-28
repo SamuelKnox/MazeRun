@@ -26,6 +26,8 @@ public:
 		FVector GroundSpikeOffset;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dangers) //Chance of spike being placed in block (percent chance)
 		float SpikeSpawnChance;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Dangers) //Chance of fast/slow box being placed in block (percent chance)
+		float BoxSpawnChance;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MazeGen101isMax) //Maze xMax
 		float MazeXKeepODD;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MazeGen101isMax) //Maze yMax
@@ -46,6 +48,10 @@ public:
 		UClass* SpikeBP;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Win) //Blueprint for winning box
 		UClass* WinBP;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Dangers) //Blueprint for fast box
+		UClass* FastBP;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Dangers) //Blueprint for slow box
+		UClass* SlowBP;
 	UFUNCTION(BlueprintCallable, Category = MazeGen)
 		void GenMaze(float tileX, float tileY);
 
@@ -56,6 +62,7 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	void SpawnSpike(AActor* block, FRotator rotation, FVector offset, float chance);
+	void SpawnBox(AActor* block, FRotator rotation, float chance); //Spawns class of box
 };
 
 template <typename AMazeGen>

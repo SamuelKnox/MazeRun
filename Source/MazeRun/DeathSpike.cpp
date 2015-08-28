@@ -33,6 +33,7 @@ ADeathSpike::ADeathSpike(const class FObjectInitializer& ObjectInitializer)
 	extendDistance = 30.0f;
 	extendSpeed = 2.0f;
 	retractSpeed = 2.0f;
+	TimeDilation = 1.0f;
 	soundDistance = 1200.0f;
 	behavior = ESpikeBehaviorEnum::RestingAtRetract;
 	SpikeMesh->OnComponentBeginOverlap.AddDynamic(this, &ADeathSpike::OnDangerHit); //Add hit function as delegate
@@ -77,7 +78,7 @@ void ADeathSpike::Tick( float DeltaTime )
 			if (FVector::Dist(GetActorLocation(), GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation()) //Attenuating spike sound
 				< soundDistance) UGameplayStatics::PlaySoundAtLocation(GetWorld(), 
 				Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), NULL, 
-				TEXT("/Game/Rolling/Sounds/SpikeTrap.SpikeTrap"))), GetActorLocation());
+				TEXT("/Game/Rolling/Sounds/SpikeTrap.SpikeTrap"))), GetActorLocation(), 1.0f, TimeDilation);
 			
 			behavior = ESpikeBehaviorEnum::Extending;
 			overallTime = 0;

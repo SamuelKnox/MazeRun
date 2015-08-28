@@ -19,6 +19,7 @@ AMaze::AMaze(const class FObjectInitializer& ObjectInitializer)
 	MazeSeed = 0;
 	GroundSpikeOffset = FVector(0.0f, 0.0f, -200.0f);
 	SpikeSpawnChance = 30.0f;
+	BoxSpawnChance = 20.0f;
 }
 
 // Called when the game starts or when spawned
@@ -169,8 +170,10 @@ void AMaze::GenMaze(float tileX, float tileY){
 	}
 	for (int x = 0; x < tileX; x++){
 		for (int y = 0; y < tileY; y++){
-			if (cellInfoGrid[x][y].isGround && !cellInfoGrid[x][y].isStartOrEnd)
+			if (cellInfoGrid[x][y].isGround && !cellInfoGrid[x][y].isStartOrEnd){
 				SpawnSpike(grid[x][y], grid[x][y]->GetActorRotation(), GroundSpikeOffset, SpikeSpawnChance);
+				SpawnBox(grid[x][y], grid[x][y]->GetActorRotation(), BoxSpawnChance);
+			}
 			else if (!cellInfoGrid[x][y].isGround)
 			{
 				int rnd4;
@@ -207,5 +210,18 @@ void AMaze::SpawnSpike(AActor* block, FRotator rotation, FVector offset, float c
 	float random = ((float)rand()) / (float)RAND_MAX;
 	if (random * 100.0f < chance) SpawnBP<AActor>(GetWorld(), SpikeBP, //from 0 to 100 percent, also not the starting tile
 		block->GetActorLocation() + offset, rotation, true, block);
+}
+
+void AMaze::SpawnBox(AActor* block, FRotator rotation, float chance)
+{
+	float random = ((float)rand()) / (float)RAND_MAX;
+	if (random * 100.0f < chance) SpawnBP<AActor>(GetWorld(), FastBP, //from 0 to 100 percent, also not the starting tile
+		block->GetActorLocation(), rotation, true, block);
+	else
+	{
+		random = ((float)rand()) / (float)RAND_MAX;
+		if (random * 100.0f < chance) SpawnBP<AActor>(GetWorld(), SlowBP, //from 0 to 100 percent, also not the starting tile
+			block->GetActorLocation(), rotation, true, block);
+	}
 }
 

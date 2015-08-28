@@ -36,6 +36,8 @@ AMazeRunBall::AMazeRunBall()
 	initialTint = Camera->PostProcessSettings.FilmWhitePoint;
 	Camera->bUsePawnControlRotation = false; // We don't want the controller rotating the camera
 
+	Music = CreateDefaultSubobject<UAudioComponent>(TEXT("Audio0"));
+	
 	// Set up forces
 	RollTorque = 50000000.0f;
 	JumpImpulse = 350000.0f;
@@ -59,7 +61,7 @@ void AMazeRunBall::Die()
 		Cast<UParticleSystem>(StaticLoadObject(UParticleSystem::StaticClass(), NULL,
 		TEXT("/Game/StarterContent/Particles/P_Explosion.P_Explosion"))), GetActorLocation(), GetActorRotation(), true);
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), Cast<USoundBase>(StaticLoadObject(USoundBase::StaticClass(), NULL,
-		TEXT("/Game/Rolling/Sounds/Explosion.Explosion"))), GetActorLocation());
+		TEXT("/Game/Rolling/Sounds/Explosion.Explosion"))), GetActorLocation(), 1.0f, CustomTimeDilation);
 	isDead = true;
 }
 void AMazeRunBall::SetupPlayerInputComponent(class UInputComponent* InputComponent)
@@ -85,6 +87,7 @@ void AMazeRunBall::MoveForward(float Val)
 
 void AMazeRunBall::Jump()
 {
+	if (isDead) deadTime = maxDeadTime;
 	if(bCanJump)
 	{
 		const FVector Impulse = FVector(0.f, 0.f, JumpImpulse);
